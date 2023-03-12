@@ -1,0 +1,49 @@
+// import XLSX from "xlsx";  //用这个导出会报错
+import * as XLSX from 'xlsx'
+import FileSaver from "file-saver";
+
+export function ExportExcel(excelData, filename) {
+    // // 需要导出的数据
+    // let excelData = [
+    //     ["幼儿园课表", null, null, null], // 标题
+    //     ["序号", "课程名称", "教师名称", "上课地点"], // 表头
+    //     ["11.1234", "11,211.1234", "11.1234", "操场"],
+    //     ["11.1234", "11,211.1234", "11.1234", "操场"],
+    //     ["11.1234", "11,211.1234", "11.1234", "操场"],
+    //     ["11.1234", "11,211.1234", "11.1234", "操场"],
+    //     ["11.1234", "11,211.1234", "11.1234", "操场"],
+    // ];
+
+    // // 导出的excel文件名
+    // const filename = "幼儿园课程表.xlsx";
+
+    // Excel第一个sheet的名称
+    const ws_name = "Sheet1";
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(excelData);
+    XLSX.utils.book_append_sheet(wb, ws, ws_name); // 将数据添加到工作薄
+
+    // 导出Excel, 注意这里用到的是XLSXS对象
+    let wbout = XLSX.write(wb, {
+        bookType: "xlsx",
+        bookSST: false,
+        type: "binary",
+    });
+    FileSaver.saveAs(
+        new Blob([s2ab(wbout)], {
+            type: "application/octet-stream",
+        }),
+        filename
+    );
+}
+
+/**
+ * 工具方法
+ */
+function s2ab(s) {
+    var buf = new ArrayBuffer(s.length);
+    var view = new Uint8Array(buf);
+    for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
+    return buf;
+}
+
